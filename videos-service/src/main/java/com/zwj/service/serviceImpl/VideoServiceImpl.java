@@ -3,8 +3,10 @@ package com.zwj.service.serviceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zwj.mapper.SearchRecordsMapper;
 import com.zwj.mapper.VideosMapper;
 import com.zwj.mapper.VideosMapperCustom;
+import com.zwj.pojo.SearchRecords;
 import com.zwj.pojo.Videos;
 import com.zwj.pojo.vo.VideosVO;
 import com.zwj.service.VideoService;
@@ -27,6 +29,9 @@ public class VideoServiceImpl implements VideoService {
     private VideosMapperCustom videosMapperCustom;
 
     @Autowired
+    private SearchRecordsMapper searchRecordsMapper;
+
+    @Autowired
     private Sid sid;
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
@@ -46,11 +51,22 @@ public class VideoServiceImpl implements VideoService {
         videosMapper.updateByPrimaryKeySelective(video);
     }
 
-    @Override
-    public PagedResult getAllVideos(Integer page, Integer pageSize) {
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public PagedResult getAllVideos(Videos video, Integer isSaveRecord ,Integer page, Integer pageSize) {
+
+        String desc = video.getVideoDesc();
+        if (isSaveRecord != null && isSaveRecord==1) {
+            SearchRecords record = new SearchRecords();
+            record.setId(sid.nextShort());
+            record.setContent(desc);
+            searchRecordsMapper.insert(record);
+        }
+
+        System.out.println(desc);
         PageHelper.startPage(page, pageSize);
-        List<VideosVO> list = videosMapperCustom.queryAllVideos();
+        List<VideosVO> list = videosMapperCustom.queryAllVideos(desc);
         PageInfo<VideosVO> pageList = new PageInfo<>(list);
 
         PagedResult pagedResult = new PagedResult();
@@ -60,5 +76,11 @@ public class VideoServiceImpl implements VideoService {
         pagedResult.setRecords(pageList.getTotal());
 
         return pagedResult;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public List<String> getHotwords() {
+        return searchRecordsMapper.getHotword();
     }
 }

@@ -3,6 +3,8 @@ package com.zwj.service;
 import com.zwj.pojo.Videos;
 import com.zwj.utils.PagedResult;
 
+import java.util.List;
+
 public interface VideoService {
     String saveVideo(Videos video);
 
@@ -14,5 +16,7 @@ public interface VideoService {
      * @param pageSize
      * @return
      */
-    PagedResult getAllVideos(Integer page,Integer pageSize);
+    PagedResult getAllVideos(Videos video, Integer isSaveRecord ,Integer page,Integer pageSize);
+
+    List<String> getHotwords();
 }

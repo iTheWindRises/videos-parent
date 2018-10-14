@@ -12,10 +12,7 @@ import io.swagger.annotations.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -28,9 +25,7 @@ import java.util.Date;
 @Api(value = "短视频接口")
 @RequestMapping("/video")
 public class VideoController extends BasicController {
-    /**
-     * ccccccccccccccccc佛挡杀佛cccc
-     */
+
     @Autowired
     private VideoService videoService;
 
@@ -181,23 +176,33 @@ public class VideoController extends BasicController {
         return JSONResult.ok();
     }
 
-
+    /**
+     * 分页和搜索查询视频列表
+     * @param video
+     * @param isSaveRecord 1-需要保持 0不需要保持
+     * @param page
+     * @return
+     * @throws Exception
+     */
     @ApiOperation(value = "用户上传视频封面")
     @ApiImplicitParams({
-            @ApiImplicitParam(name="userId", value="用户id", required=true,
-                    dataType="String", paramType="form"),
-            @ApiImplicitParam(name="videoId", value="视频主键id", required=true,
-                    dataType="String", paramType="form")
-    })
+            @ApiImplicitParam(name="page", value="当前页", required=true,
+                    dataType="Integer", paramType="form")
 
+    })
     @PostMapping(value = "/showAll")
-    public JSONResult showAll(Integer page) throws Exception {
+    public JSONResult showAll(@RequestBody Videos video, Integer isSaveRecord , Integer page) throws Exception {
         if (page == null) {
             page=1;
         }
 
-        PagedResult result = videoService.getAllVideos(page, PAGE_SIZE);
+        PagedResult result = videoService.getAllVideos(video,isSaveRecord,page, PAGE_SIZE);
 
         return JSONResult.ok(result);
+    }
+
+    @PostMapping(value = "/hot")
+    public JSONResult hot() throws Exception {
+        return JSONResult.ok(videoService.getHotwords());
     }
 }
