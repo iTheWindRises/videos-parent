@@ -28,7 +28,9 @@ import java.util.Date;
 @Api(value = "短视频接口")
 @RequestMapping("/video")
 public class VideoController extends BasicController {
-
+    /**
+     * ccccccccccccccccc佛挡杀佛cccc
+     */
     @Autowired
     private VideoService videoService;
 
